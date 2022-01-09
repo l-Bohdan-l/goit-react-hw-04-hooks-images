@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import { Button } from '../Button/Button';
 import Loader from 'react-loader-spinner';
@@ -6,68 +5,46 @@ import { Modal } from '../Modal/Modal';
 import styles from './ImageGallery.module.scss';
 import PropTypes from 'prop-types';
 import { findImage } from '../../services/ApiSrvice';
+import { useState, useEffect } from 'react';
 
-export class ImageGallery extends Component {
-  static propTypes = {
-    onClose: PropTypes.func,
-    onClick: PropTypes.func,
-    openModal: PropTypes.func,
+export function ImageGallery({ value }) {
+  const [imgQuery, setImgQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [imgArray, setImgArray] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [largeUrl, setLargeUrl] = useState('');
+
+  console.log('searc', value);
+  // useEffect(() => {
+  //   setPage(page + 1), [value]
+  // })
+
+  useEffect(() => {
+    // setPage(1);
+    // setImgArray([])
+
+    setLoading(true);
+    setTimeout(() => {
+      findImage(value, page + 1)
+        .then(data => {
+          setImgArray([...imgArray, ...data.hits]);
+        })
+        .finally(() => setLoading(false));
+    }, 1000);
+  }, [value, page]);
+
+  const nextPage = () => {
+    setPage(page + 1);
   };
 
-  state = {
-    imgQuery: '',
-    page: 1,
-    imgArray: [],
-    loading: false,
-    showModal: false,
-    largeUrl: '',
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.imgQuery !== this.props.imgQuery) {
-      this.setState({ loading: true });
-      this.setState({ page: 1, imgArray: [] });
-    }
-
-    if (
-      prevProps.imgQuery !== this.props.imgQuery ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({ loading: true });
-      setTimeout(() => {
-        findImage(this.props.imgQuery, this.state.page)
-          .then(data => {
-            this.setState(({ imgArray }) => {
-              return { imgArray: [...imgArray, ...data.hits] };
-            });
-          })
-          .finally(() => this.setState({ loading: false }));
-      }, 1000);
-      return;
-    }
-  }
-
-  nextPage = () => {
-    this.setState(({ page }) => {
-      return {
-        page: page + 1,
-      };
-    });
-  };
-
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-  };
-
-  getLargeUrl = e => {
-    const image = this.state.imgArray.find(
-      img => img.webformatURL === e.target.src,
-    );
-    this.setState(({ largeUrl }) => ({
-      largeUrl: image.largeImageURL,
-    }));
+  const getLargeUrl = e => {
+    const image = imgArray.find(img => img.webformatURL === e.target.src);
+    setLargeUrl(image.largeImageURL);
   };
 
   // largeUrl =() => {this.getLargeUrl(image. largeImageURL)}
@@ -78,30 +55,34 @@ export class ImageGallery extends Component {
   // }));
   // };
 
-  render() {
-    return (
-      <>
-        {this.state.showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src={this.state.largeUrl} alt={this.state.imgQuery} />
-          </Modal>
-        )}
-        <ul className={styles.ImageGallery}>
-          {this.state.imgArray.map(image => (
-            <ImageGalleryItem
-              key={image.id}
-              link={image.webformatURL}
-              name={this.props.imgQuery}
-              largeUrl={this.getLargeUrl}
-              openModal={this.toggleModal}
-            />
-          ))}
-        </ul>
-        {this.state.loading && (
-          <Loader type="Rings" color="#00BFFF" height={80} width={80} />
-        )}
-        {this.state.imgArray.length !== 0 && <Button onClick={this.nextPage} />}
-      </>
-    );
-  }
+  return (
+    <>
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <img src={largeUrl} alt={imgQuery} />
+        </Modal>
+      )}
+      <ul className={styles.ImageGallery}>
+        {imgArray.map(image => (
+          <ImageGalleryItem
+            key={image.id}
+            link={image.webformatURL}
+            name={imgQuery}
+            largeUrl={getLargeUrl}
+            openModal={toggleModal}
+          />
+        ))}
+      </ul>
+      {loading && (
+        <Loader type="Rings" color="#00BFFF" height={80} width={80} />
+      )}
+      {imgArray.length !== 0 && <Button onClick={nextPage} />}
+    </>
+  );
 }
+
+ImageGallery.propTypes = {
+  onClose: PropTypes.func,
+  onClick: PropTypes.func,
+  openModal: PropTypes.func,
+};

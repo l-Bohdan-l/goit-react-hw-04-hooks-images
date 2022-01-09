@@ -1,35 +1,33 @@
-import { Component } from 'react';
 import styles from './Modal.module.scss';
+import { useState, useEffect } from 'react';
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.hendleKeyDown);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.hendleKeyDown);
-  }
+export function Modal({ onClose, children }) {
+  // const clickOnImg = e => {
+  //   onClose();
+  // };
 
-  clickOnImg = e => {
-    this.props.onClose();
-  };
+  useEffect(() => {
+    window.addEventListener('keydown', hendleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', hendleKeyDown);
+    };
+  }, []);
 
-  hendleKeyDown = e => {
+  const hendleKeyDown = e => {
     if (e.code === 'Escape') {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  clickOnModal = e => {
+  const clickOnModal = e => {
     if (e.target === e.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    return (
-      <div className={styles.overlay} onClick={this.clickOnModal}>
-        <div className={styles.modal}>{this.props.children}</div>
-      </div>
-    );
-  }
+  return (
+    <div className={styles.overlay} onClick={clickOnModal}>
+      <div className={styles.modal}>{children}</div>
+    </div>
+  );
 }

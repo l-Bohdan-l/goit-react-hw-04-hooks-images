@@ -8,7 +8,6 @@ export const findImage = (imgQuery, page) => {
     `&page=${page}` +
     `&image_type=photo&orientation=horizontal&per_page=12`;
   return fetch(url).then(result => {
-    console.log(imgQuery);
     return result.json();
   });
 };
