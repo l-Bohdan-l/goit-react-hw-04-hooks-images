@@ -12,7 +12,6 @@ export function Searchbar({ onSubmit }) {
   const handleChange = event => {
     const { value } = event.currentTarget;
     setImgQuery(value);
-    console.log(imgQuery);
   };
 
   const handleSubmit = e => {

@@ -1,11 +1,7 @@
 import styles from './Modal.module.scss';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 export function Modal({ onClose, children }) {
-  // const clickOnImg = e => {
-  //   onClose();
-  // };
-
   useEffect(() => {
     window.addEventListener('keydown', hendleKeyDown);
     return () => {

@@ -9,26 +9,19 @@ import { useState, useEffect } from 'react';
 
 export function ImageGallery({ value }) {
   const [imgQuery, setImgQuery] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [imgArray, setImgArray] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [largeUrl, setLargeUrl] = useState('');
 
-  console.log('searc', value);
-  // useEffect(() => {
-  //   setPage(page + 1), [value]
-  // })
-
   useEffect(() => {
-    // setPage(1);
-    // setImgArray([])
-
+    if (!value) return;
     setLoading(true);
     setTimeout(() => {
-      findImage(value, page + 1)
+      findImage(value, page)
         .then(data => {
-          setImgArray([...imgArray, ...data.hits]);
+          setImgArray([...data.hits]);
         })
         .finally(() => setLoading(false));
     }, 1000);
@@ -46,14 +39,6 @@ export function ImageGallery({ value }) {
     const image = imgArray.find(img => img.webformatURL === e.target.src);
     setLargeUrl(image.largeImageURL);
   };
-
-  // largeUrl =() => {this.getLargeUrl(image. largeImageURL)}
-
-  // getLargeUrl = largeUrl => {
-  // this.setState(({ largeUrl }) => ({
-  // largeUrl
-  // }));
-  // };
 
   return (
     <>

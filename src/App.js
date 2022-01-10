@@ -11,9 +11,9 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
 
-  const handleSubmit = imgQuery => setSearchQuery(imgQuery);
-
-  console.log('setSearchQuery', searchQuery);
+  const handleSubmit = imgQuery => {
+    setSearchQuery(imgQuery);
+  };
 
   return (
     <div className="App">
