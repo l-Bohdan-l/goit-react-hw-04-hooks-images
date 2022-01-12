@@ -35,9 +35,8 @@ export function ImageGallery({ value }) {
     setShowModal(!showModal);
   };
 
-  const getLargeUrl = e => {
-    const image = imgArray.find(img => img.webformatURL === e.target.src);
-    setLargeUrl(image.largeImageURL);
+  const getLargeUrl = largeImageURL => {
+    setLargeUrl(largeImageURL);
   };
 
   return (
@@ -53,7 +52,7 @@ export function ImageGallery({ value }) {
             key={image.id}
             link={image.webformatURL}
             name={imgQuery}
-            largeUrl={getLargeUrl}
+            largeUrl={() => getLargeUrl(image.largeImageURL)}
             openModal={toggleModal}
           />
         ))}
